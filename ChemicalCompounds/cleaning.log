@@ -1,0 +1,55 @@
+2025-02-14 10:40:48,833 - INFO - Starting data validation...
+2025-02-14 10:46:12,989 - INFO - Starting data validation...
+2025-02-14 10:46:12,992 - WARNING - Invalid SMILES: canonical_smiles
+2025-02-14 10:46:13,070 - WARNING - Invalid SMILES: canonical_smiles
+2025-02-14 10:46:13,172 - WARNING - Non-UTF-8 detected: nan
+2025-02-14 10:46:13,173 - WARNING - Non-UTF-8 detected: nan
+2025-02-14 10:46:13,174 - WARNING - Non-UTF-8 detected: nan
+2025-02-14 10:46:13,175 - WARNING - Non-UTF-8 detected: nan
+2025-02-14 10:46:13,177 - INFO - Filtering valid and UTF-8 encoded rows...
+2025-02-14 10:46:13,180 - INFO - Finished cleaning. 1416 valid rows retained out of 1422 total rows.
+2025-02-14 10:47:37,705 - INFO - Starting data validation...
+2025-02-14 10:47:37,708 - WARNING - Invalid SMILES: canonical_smiles
+2025-02-14 10:47:37,787 - WARNING - Invalid SMILES: canonical_smiles
+2025-02-14 10:47:37,896 - WARNING - Non-UTF-8 detected: nan
+2025-02-14 10:47:37,897 - WARNING - Non-UTF-8 detected: nan
+2025-02-14 10:47:37,898 - WARNING - Non-UTF-8 detected: nan
+2025-02-14 10:47:37,899 - WARNING - Non-UTF-8 detected: nan
+2025-02-14 10:47:37,901 - INFO - Filtering valid and UTF-8 encoded rows...
+2025-02-14 10:47:37,904 - INFO - Finished cleaning. 1416 valid rows retained out of 1422 total rows.
+2025-02-14 11:36:51,109 - INFO - Starting data validation...
+2025-02-14 11:36:51,112 - WARNING - Invalid SMILES: canonical_smiles
+2025-02-14 11:36:51,193 - WARNING - Invalid SMILES: canonical_smiles
+2025-02-14 11:36:51,295 - WARNING - Non-UTF-8 detected: nan
+2025-02-14 11:36:51,297 - WARNING - Non-UTF-8 detected: nan
+2025-02-14 11:36:51,298 - WARNING - Non-UTF-8 detected: nan
+2025-02-14 11:36:51,299 - WARNING - Non-UTF-8 detected: nan
+2025-02-14 11:36:51,302 - INFO - Filtering valid and UTF-8 encoded rows...
+2025-02-14 11:36:51,304 - INFO - Finished cleaning. 1416 valid rows retained out of 1422 total rows.
+2025-02-14 11:37:35,586 - INFO - Starting data validation...
+2025-02-14 11:37:35,588 - WARNING - Invalid SMILES: canonical_smiles
+2025-02-14 11:37:35,669 - WARNING - Invalid SMILES: canonical_smiles
+2025-02-14 11:37:35,770 - WARNING - Non-UTF-8 detected: nan
+2025-02-14 11:37:35,772 - WARNING - Non-UTF-8 detected: nan
+2025-02-14 11:37:35,773 - WARNING - Non-UTF-8 detected: nan
+2025-02-14 11:37:35,774 - WARNING - Non-UTF-8 detected: nan
+2025-02-14 11:37:35,776 - INFO - Filtering valid and UTF-8 encoded rows...
+2025-02-14 11:37:35,779 - INFO - Finished cleaning. 1416 valid rows retained out of 1422 total rows.
+2025-02-14 11:39:52,230 - INFO - Starting data validation...
+2025-02-14 11:39:52,233 - WARNING - Invalid SMILES: canonical_smiles
+2025-02-14 11:39:52,318 - WARNING - Invalid SMILES: canonical_smiles
+2025-02-14 11:39:52,432 - WARNING - Non-UTF-8 detected: nan
+2025-02-14 11:39:52,433 - WARNING - Non-UTF-8 detected: nan
+2025-02-14 11:39:52,435 - WARNING - Non-UTF-8 detected: nan
+2025-02-14 11:39:52,436 - WARNING - Non-UTF-8 detected: nan
+2025-02-14 11:39:52,438 - INFO - Filtering valid and UTF-8 encoded rows...
+2025-02-14 11:39:52,441 - INFO - Finished cleaning. 1416 valid rows retained out of 1422 total rows.
+2025-02-14 11:42:47,535 - INFO - Starting data validation...
+2025-02-14 11:42:47,536 - WARNING - Invalid SMILES: canonical_smiles
+2025-02-14 11:42:47,615 - WARNING - Invalid SMILES: canonical_smiles
+2025-02-14 11:42:47,714 - WARNING - Non-UTF-8 detected: nan
+2025-02-14 11:42:47,716 - WARNING - Non-UTF-8 detected: nan
+2025-02-14 11:42:47,716 - WARNING - Non-UTF-8 detected: nan
+2025-02-14 11:42:47,717 - WARNING - Non-UTF-8 detected: nan
+2025-02-14 11:42:47,719 - INFO - Filtering valid and UTF-8 encoded rows...
+2025-02-14 11:42:47,722 - INFO - Finished cleaning. 1416 valid rows retained out of 1422 total rows.

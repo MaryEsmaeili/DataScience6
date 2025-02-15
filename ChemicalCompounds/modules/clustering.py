@@ -1,11 +1,12 @@
-import numpy as np
+import pandas as pd
 import umap
 import matplotlib.pyplot as plt
 from sklearn.cluster import KMeans, AgglomerativeClustering
 from sklearn.preprocessing import StandardScaler
+from modules.descriptor_fingerprint import DescriptorFingerprintProcessor  # Import tanimoto calculator
 
 class Clustering:
-    def __init__(self, n_clusters=8, n_neighbors=15, min_dist=0.1, n_components=2):
+    def __init__(self, n_clusters=6, n_neighbors=15 , min_dist=0.05, n_components=2):
         """
         Clustering class using UMAP for dimensionality reduction.
 
@@ -20,18 +21,39 @@ class Clustering:
         self.min_dist = min_dist
         self.n_components = n_components
 
-    def scale_and_umap(self, features_df):
+    def combine_features(self, descriptors_df, fingerprints_df):
         """
-        Scales the features and reduces dimensionality using UMAP.
+        Combines molecular descriptors, fingerprints, and Tanimoto similarity scores into one dataset.
 
         Args:
-            features_df (pd.DataFrame): The feature dataframe.
+            descriptors_df (pd.DataFrame): DataFrame containing molecular descriptors.
+            fingerprints_df (pd.DataFrame): DataFrame containing molecular fingerprints.
+
+        Returns:
+            pd.DataFrame: Combined dataset.
+        """
+        # Compute Tanimoto similarities from fingerprints
+        fingerprints_list = fingerprints_df.values.tolist()  # Convert to list for compatibility
+        avg_tanimoto = DescriptorFingerprintProcessor.compute_avg_tanimoto(fingerprints_list)
+
+        # Add Tanimoto similarity as a column
+        combined_df = pd.concat([descriptors_df, fingerprints_df], axis=1)
+        combined_df["Avg Tanimoto"] = avg_tanimoto  # Append as a feature
+
+        return combined_df
+
+    def scale_and_umap(self, combined_features_df):
+        """
+        Scales the combined features and reduces dimensionality using UMAP.
+
+        Args:
+            combined_features_df (pd.DataFrame): The full feature dataframe.
 
         Returns:
             np.ndarray: The UMAP-transformed features.
         """
         scaler = StandardScaler()
-        scaled_features = scaler.fit_transform(features_df)
+        scaled_features = scaler.fit_transform(combined_features_df)
 
         umap_reducer = umap.UMAP(
             n_neighbors=self.n_neighbors,
@@ -46,7 +68,7 @@ class Clustering:
 
     def perform_clustering(self, data):
         """
-        Performs clustering using KMeans, and Agglomerative Clustering.
+        Performs clustering using KMeans and Agglomerative Clustering.
 
         Args:
             data (np.ndarray): The transformed feature matrix.
@@ -70,7 +92,7 @@ class Clustering:
             data (np.ndarray): The transformed feature matrix.
             labels (dict): Clustering results with method names as keys and cluster labels as values.
         """
-        umap_reducer = umap.UMAP(n_neighbors=15, min_dist=0.2, n_components=2, random_state=42)
+        umap_reducer = umap.UMAP(n_neighbors=self.n_neighbors, min_dist=self.min_dist, n_components=2, random_state=42)
         umap_data = umap_reducer.fit_transform(data)
 
         for method, label in labels.items():

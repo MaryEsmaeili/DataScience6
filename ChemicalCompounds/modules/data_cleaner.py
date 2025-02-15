@@ -20,50 +20,56 @@ class DataCleaner:
             cell.encode("utf-8")
             return True
         except Exception:
-            logging.warning(f"Non-UTF-8 detected: {cell}")
             return False
 
     @staticmethod
-    def detect_invalid_smiles(smiles):
+    def is_valid_smiles(smiles):
         """Check if a SMILES string is valid."""
         try:
-            mol = Chem.MolFromSmiles(smiles)
-            if mol is None:
-                logging.warning(f"Invalid SMILES: {smiles}")
-                return False
-            return True
-        except Exception as e:
-            logging.error(f"Error parsing SMILES {smiles}: {e}")
+            return Chem.MolFromSmiles(smiles) is not None
+        except Exception:
             return False
 
     def clean(self, df):
         """
-        Clean the dataset by validating SMILES strings and UTF-8 encoding.
+        Cleans the dataset by:
+        - Removing duplicate rows
+        - Dropping missing critical values (canonical_smiles)
+        - Validating SMILES strings
+        - Ensuring UTF-8 encoding for text fields
+        - Returning only necessary columns
 
         Args:
-            df (pd.DataFrame): Input DataFrame with `compound_name`, `molecular_formula`, `canonical_smiles`.
+            df (pd.DataFrame): Input DataFrame with at least `compound_name`, `molecular_formula`, and `canonical_smiles`.
 
         Returns:
-            pd.DataFrame: Cleaned DataFrame containing only valid and UTF-8 encoded rows.
+            pd.DataFrame: Cleaned DataFrame.
         """
-        logging.info("Starting data validation...")
+        original_count = len(df)
 
-        # Validate SMILES strings
-        df["valid"] = df["canonical_smiles"].apply(self.detect_invalid_smiles)
+        # Remove duplicates
+        df = df.drop_duplicates()
 
-        # Validate UTF-8 encoding
-        df["is_utf8_name"] = df["compound_name"].apply(self.is_utf8)
-        df["is_utf8_formula"] = df["molecular_formula"].apply(self.is_utf8)
-        df["is_utf8_smiles"] = df["canonical_smiles"].apply(self.is_utf8)
+        # Drop rows with missing SMILES
+        df = df.dropna(subset=["canonical_smiles"])
 
-        # Filter valid rows
-        logging.info("Filtering valid and UTF-8 encoded rows...")
-        df_cleaned = df[
-            (df["valid"]) &
-            (df["is_utf8_name"]) &
-            (df["is_utf8_formula"]) &
-            (df["is_utf8_smiles"])
+        # Standardize column names
+        df.columns = df.columns.str.strip().str.lower().str.replace(" ", "_")
+
+        # Validate SMILES and UTF-8 encoding
+        df = df[
+            df["canonical_smiles"].apply(self.is_valid_smiles) &
+            df["compound_name"].apply(self.is_utf8) &
+            df["molecular_formula"].apply(self.is_utf8) &
+            df["canonical_smiles"].apply(self.is_utf8)
         ]
 
-        logging.info(f"Finished cleaning. {len(df_cleaned)} valid rows retained out of {len(df)} total rows.")
-        return df_cleaned
+        # Select relevant columns
+        clean_df = df[["compound_name", "molecular_formula", "canonical_smiles"]].copy()
+
+        # Logging and reporting
+        cleaned_count = len(clean_df)
+        deleted_count = original_count - cleaned_count
+        logging.info(f"Cleaning complete: {cleaned_count} valid rows retained, {deleted_count} rows removed.")
+
+        return clean_df

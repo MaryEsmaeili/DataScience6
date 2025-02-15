@@ -1,31 +1,73 @@
-from modules.data_loader import DataLoader
-from modules.data_cleaner import DataCleaner
-from modules.feature_generator import FeatureGenerator
-from modules.clustering import Clustering
-from modules.evaluation import Evaluation
 
-# Define file paths
-synthetic_path = "/homes/mesmaeili/Documents/DS6/data/non_natural_products.txt"
-natural_path = "/homes/mesmaeili/Documents/DS6/data/subset_natural_products.txt"
+import pandas as pd
+from modules.combine_data_processor import CombinedDatasetProcessor
+from modules.natural_substitutes_saver import NaturalSubstituteSaver
+from modules.pipeline import MolecularPipeline
+from modules.substitute_analyzer import SubstituteAnalyzer
+from modules.visualizer import Visualizer
+from modules.mix_cluster_identifier import MixedClusterVisualizer
 
-# Load Data
-data_loader = DataLoader(synthetic_path, natural_path)
-df = data_loader.load_data()
+if __name__ == "__main__":
+    # Process synthetic and natural datasets
+    synthetic_pipeline = MolecularPipeline(
+        "/data/non_natural.txt",
+        "Synthetic Dataset",
+        "Synthetic"
+    )
+    synthetic_df = synthetic_pipeline.process_and_cluster()
 
-# Validate & Clean Data
-cleaner = DataCleaner()
-cleaned_df = cleaner.clean(df)
+    natural_pipeline = MolecularPipeline(
+        "/data/subset_natural.txt",
+        "Natural Dataset",
+        "Natural"
+    )
+    natural_df = natural_pipeline.process_and_cluster()
 
-# Generate Features
-feature_gen = FeatureGenerator()
-features_df, fingerprints_df = feature_gen.process_features(cleaned_df)
+    # Combine datasets and save
+    combined_df = pd.concat([synthetic_df, natural_df], ignore_index=True)
+    combined_dataset_path = "/homes/mesmaeili/Documents/DS6/data/combined_dataset.csv"
+    combined_df.to_csv(combined_dataset_path, index=False)
+    print(f"Combined dataset saved to '{combined_dataset_path}'.")
 
-# Scale, Apply UMAP, and Cluster
-clustering = Clustering(n_clusters=6, n_neighbors=15, min_dist=0.1, n_components=2)
-umap_features = clustering.scale_and_umap(features_df)
-labels = clustering.perform_clustering(umap_features)
-clustering.visualize_clusters(umap_features, labels)
+    # Plot histogram of average Tanimoto distances
+    Visualizer.plot_tanimoto_histogram(synthetic_df, natural_df)
 
-# Evaluate Clustering
-evaluation = Evaluation()
-evaluation.evaluate(umap_features, labels)
+    # Process the combined dataset
+    print("\nProcessing Combined Dataset...")
+    combined_df, combined_butina_labels, combined_hac_labels, combined_reduced_features = CombinedDatasetProcessor.process_combined_dataset(
+        combined_df, butina_cutoff=0.5, n_neighbors=15, min_dist=0.01
+    )
+
+    # Identify and visualize mixed clusters
+    MixedClusterVisualizer.find_and_visualize_mixed_clusters(
+        combined_df, combined_reduced_features, cluster_column="butina_cluster", title="Mixed Clusters (Butina)"
+    )
+
+    # Save natural compounds in mixed clusters
+    output_file = "natural_substitutes.csv"
+    NaturalSubstituteSaver.save_natural_substitutes_to_csv(
+        combined_df,
+        cluster_column="butina_cluster",
+        source_column="source",
+        output_file=output_file
+    )
+    print(f"Natural substitutes saved to '{output_file}'.")
+
+    # Find common natural substitutes
+    substitutes_df = SubstituteAnalyzer.find_common_natural_substitutes(
+        combined_df,
+        cluster_column="butina_cluster",
+        similarity_threshold=0.2
+    )
+
+    # Save and analyze common natural substitutes
+    substitutes_output_file = "natural_synthetic_substitutes.csv"
+    if not substitutes_df.empty:
+        substitutes_df.to_csv(substitutes_output_file, index=False)
+        print(f"Results saved to '{substitutes_output_file}'.")
+
+        # Plot property differences and display top substitutes
+        SubstituteAnalyzer.plot_property_differences(substitutes_df)
+        SubstituteAnalyzer.display_top_substitutes(substitutes_df, top_n=5)
+    else:
+        print("No substitutes found. Try lowering the similarity threshold.")
